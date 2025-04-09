@@ -1,8 +1,3 @@
-¡Perfecto! Aquí te dejo un **README.md** completo, limpio y profesional, para que lo dejes en tu repositorio de GitHub con todo lo que lograste:
-
----
-
-```markdown
 # 🟢 Proyecto de Manejo de Promesas + Integración Continua
 
 Este proyecto consiste en una aplicación React sencilla que consume la API pública de usuarios aleatorios [Random User API](https://randomuser.me/api/) y muestra información básica de los usuarios.
