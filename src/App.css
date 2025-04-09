@@ -60,3 +60,18 @@ button {
   gap: 20px;
   margin-top: 10px;
 }
+
+.ficha {
+  background: #f8f8f8;
+  border-radius: 12px;
+  padding: 16px;
+  max-width: 400px;
+  margin: 20px auto;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0,1);
+}
+
+.ficha img {
+  border-radius: 50%;
+  margin-top: 12px;
+}

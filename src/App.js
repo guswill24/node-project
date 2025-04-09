@@ -4,6 +4,7 @@ import SearchForm from './components/SearchForm';
 import './App.css';
 import axios from 'axios';
 import VisualizarTiempos from './components/VisualizarTiempos';
+import FichaPersonal from './components/FichaPersonal';
 
 function App() {
   const [timeAxios, setTimeAxios] = useState(parseFloat(localStorage.getItem('axiosTime') ?? 0));
@@ -13,12 +14,15 @@ function App() {
   const [country, setCountry] = useState('US');
   const [isLoading, setIsLoading] = useState(false);
   const [loadingType, setLoadingType] = useState('');
+  const [showFicha, setShowFicha] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState(null);
 
   const url = `https://randomuser.me/api/?results=12&gender=${gender}&nat=${country}`;
 
   const findPeopleAxios = useCallback(async () => {
     if (isLoading) return;
     setIsLoading(true);
+    setShowFicha(false);
     setLoadingType('axios');
     setPeople({ axios: [], fetch: [] });
 
@@ -35,6 +39,7 @@ function App() {
   const findPeopleFetch = useCallback(async () => {
     if (isLoading) return;
     setIsLoading(true);
+    setShowFicha(false);
     setLoadingType('fetch');
     setPeople({ axios: [], fetch: [] });
 
@@ -48,11 +53,12 @@ function App() {
     } finally {
       setTimeout(() => setIsLoading(false), 500);
     }
-  }, [isLoading, url]); // ✅ Solo isLoading y url
+  }, [gender, country, isLoading, url]);
 
   const compareRequests = useCallback(async () => {
     if (isLoading) return;
     setIsLoading(true);
+    setShowFicha(false);
     setLoadingType('compare');
     setPeople({ axios: [], fetch: [] });
 
@@ -83,10 +89,22 @@ function App() {
     } finally {
       setTimeout(() => setIsLoading(false), 500);
     }
-  }, [isLoading, url]); // ✅ Solo isLoading y url
+  }, [gender, country, isLoading, url]);
 
   const handleGender = (event) => setGender(event.target.value);
   const handleCountry = (event) => setCountry(event.target.value);
+
+  const mostrarFicha = () => {
+  if (people.axios.length > 0) {
+    setSelectedPerson(people.axios[0]);
+    setShowFicha(true);
+    setIsLoading(false);
+    setLoadingType('');
+  } else {
+    console.warn("No hay personas para mostrar en la ficha.");
+  }
+};
+
 
   return (
     <div className="App">
@@ -102,7 +120,15 @@ function App() {
         <button onClick={compareRequests} disabled={isLoading} className="btn">
           {isLoading && loadingType === 'compare' ? "Cargando..." : "Comparar Axios vs Fetch"}
         </button>
+        <button onClick={mostrarFicha} disabled={isLoading} className="btn">
+          Ficha Personal
+        </button>
       </div>
+
+    {showFicha ? (
+      <FichaPersonal person={selectedPerson} />
+    ) : (
+      <>
       <VisualizarTiempos timeAxios={timeAxios} timeFetch={timeFetch} />
       <div className="App-results">
         <div className="result-section">
@@ -128,6 +154,8 @@ function App() {
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }
