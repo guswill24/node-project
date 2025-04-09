@@ -30,7 +30,7 @@ function App() {
     } finally {
       setTimeout(() => setIsLoading(false), 500);
     }
-  }, [gender, country, isLoading, url]);
+  }, [isLoading, url]); 
 
   const findPeopleFetch = useCallback(async () => {
     if (isLoading) return;
@@ -48,7 +48,7 @@ function App() {
     } finally {
       setTimeout(() => setIsLoading(false), 500);
     }
-  }, [gender, country, isLoading, url]);
+  }, [isLoading, url]); // ✅ Solo isLoading y url
 
   const compareRequests = useCallback(async () => {
     if (isLoading) return;
@@ -83,7 +83,7 @@ function App() {
     } finally {
       setTimeout(() => setIsLoading(false), 500);
     }
-  }, [gender, country, isLoading, url]);
+  }, [isLoading, url]); // ✅ Solo isLoading y url
 
   const handleGender = (event) => setGender(event.target.value);
   const handleCountry = (event) => setCountry(event.target.value);
