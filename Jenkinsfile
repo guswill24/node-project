@@ -41,4 +41,18 @@ pipeline {
       }
     }
   }
+
+  post {
+    success {
+      echo "Pipeline ejecutando correctamente"
+    }
+
+    failure {
+      echo "Error en alguna etapa del pipeline. Revisar los logs"
+    }
+
+    always {
+      echo "Pipeline Finalizado. Puedes revisar el historial"
+    }
+  }
 }
