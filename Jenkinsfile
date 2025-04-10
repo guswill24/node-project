@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-    CI = "false" // Desactiva que React trate los warnings como errores
+    CI = "false" 
     VERCEL_TOKEN = credentials('vercel-token')
   }
   stages {
@@ -38,6 +38,12 @@ pipeline {
     stage('Build app') {
       steps {
         bat 'npm run build'
+      }
+    }
+    stage('Deploy to Vercel') {
+      steps {
+        // vercel cli
+        bat 'npx vercel --prod --token=%VERCEL_TOKEN%'
       }
     }
   }
