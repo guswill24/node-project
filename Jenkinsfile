@@ -1,63 +1,60 @@
 pipeline {
-  agent any
-  environment {
-    CI = "false" 
-    VERCEL_TOKEN = credentials('vercel-token')
-  }
-  stages {
-    stage('Declarative: Checkout SCM') {
-      steps {
-        checkout scm
-      }
-    }
-    stage('Tool Install') {
-      steps {
-       tool name: 'Node 20', type: 'nodejs'
-      }
-    }
-    stage('Clean workspace') {
-      steps {
-        deleteDir()
-      }
-    }
-    stage('Checkout') {
-      steps {
-        git url: 'https://github.com/guswill24/node-project.git', branch: 'main'
-      }
-    }
-    stage('Install dependencies') {
-      steps {
-        bat 'call npm install --legacy-peer-deps'
-      }
-    }
-    stage('Run tests') {
-      steps {
-        bat 'npm test -- --watchAll=false'
-      }
-    }
-    stage('Build app') {
-      steps {
-        bat 'npm run build'
-      }
-    }
-    stage('Deploy to Vercel') {
-      steps {
-        bat 'set PATH=%APPDATA%\\npm;%PATH% && npx vercel --prod --token=%VERCEL_TOKEN%'
-      }
-    }
-  }
+    agent any
 
-  post {
-    success {
-      echo "Pipeline ejecutando correctamente"
+    tools {
+        nodejs 'Node_20'
     }
 
-    failure {
-      echo "Error en alguna etapa del pipeline. Revisar los logs"
+    environment {
+        VERCEL_TOKEN = credentials('vercel_token')
     }
 
-    always {
-      echo "Pipeline Finalizado. Puedes revisar el historial"
+    stages {
+
+        stage('Clean workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/guswill24/node-project.git', branch: 'main'
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                bat 'npm install --legacy-peer-deps'
+            }
+        }
+
+        stage('Run tests') {
+            steps {
+                bat 'npm test -- --watchAll=false'
+            }
+        }
+
+        stage('Build app') {
+            steps {
+                bat 'npm run build'
+            }
+        }
+
+        stage('Deploy to Vercel') {
+            steps {
+                // Corregido: agregamos el path para que Jenkins encuentre npx/vercel
+                bat 'set PATH=%APPDATA%\\npm;%PATH% && npx vercel --prod --token=%VERCEL_TOKEN%'
+            }
+        }
     }
-  }
+
+    post {
+        always {
+            echo 'Pipeline Finalizado. Puedes revisar el historial'
+        }
+        failure {
+            echo 'Error en alguna etapa del pipeline. Revisar los logs'
+        }
+    }
 }
