@@ -42,8 +42,7 @@ pipeline {
     }
     stage('Deploy to Vercel') {
       steps {
-        // vercel cli
-        bat 'npx vercel --prod --token=%VERCEL_TOKEN%'
+        bat 'set PATH=%APPDATA%\\npm;%PATH% && npx vercel --prod --token=%VERCEL_TOKEN%'
       }
     }
   }
