@@ -31,7 +31,7 @@ pipeline {
 
         stage('Run tests') {
             steps {
-                bat 'npm test -- --watchAll=false'
+                bat 'set PATH=%APPDATA%\\npm;%PATH% && npm test -- --watchAll=false'
             }
         }
 
