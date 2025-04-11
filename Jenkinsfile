@@ -2,65 +2,60 @@ pipeline {
   agent any
 
   environment {
-    CI = "false" // Desactiva que React trate los warnings como errores
-    VERCEL_TOKEN = credentials('vercel-token') // Token (si se usa despliegue, si no, puedes quitarlo)
+    CI = "false"
+    VERCEL_TOKEN = credentials('vercel-token')
+    // Agrega Node.js al PATH de Windows
+    PATH = "C:\\Program Files\\nodejs;${env.PATH}"
   }
 
   stages {
-    stage('Declarative: Checkout SCM') {
-      steps {
-        checkout scm
-      }
-    }
-
-    stage('Tool Install') {
-      steps {
-        tool name: 'Node 20', type: 'nodejs'
-      }
-    }
-
-    stage('Clean workspace') {
-      steps {
-        deleteDir()
-      }
-    }
-
     stage('Checkout') {
       steps {
-        git url: 'https://github.com/manuel4320/node-project.git', branch: 'main'
+        checkout([$class: 'GitSCM', 
+                 branches: [[name: '*/main']],
+                 extensions: [],
+                 userRemoteConfigs: [[url: 'https://github.com/manuel4320/node-project.git']]
+        ])
+      }
+    }
+
+    stage('Setup Node.js') {
+      steps {
+        // Verifica que Node.js esté instalado y accesible
+        bat 'where node'
+        bat 'node --version'
+        bat 'npm --version'
       }
     }
 
     stage('Install dependencies') {
       steps {
-        bat 'npm install --legacy-peer-deps'
+        // Ejecuta con el Node.js instalado globalmente
+        bat '"C:\\Program Files\\nodejs\\npm.cmd" install --legacy-peer-deps'
       }
     }
 
     stage('Run tests') {
       steps {
-        bat 'npm test -- --watchAll=false'
+        bat '"C:\\Program Files\\nodejs\\npm.cmd" test -- --watchAll=false'
       }
     }
 
     stage('Build app') {
       steps {
-        bat 'npm run build'
+        bat '"C:\\Program Files\\nodejs\\npm.cmd" run build'
       }
     }
   }
 
   post {
-    success {
-      echo "✅ Pipeline ejecutado correctamente. Build exitoso."
-    }
-
     failure {
-      echo "❌ Error en alguna etapa del pipeline. Revisar los logs."
+      echo "❌ Error en el pipeline. Revisa los logs."
+      // Opcional: Limpiar workspace si falla
+      cleanWs()
     }
-
-    always {
-      echo "📦 Pipeline finalizado (éxito o fallo). Puedes revisar el historial."
+    success {
+      echo "✅ Pipeline ejecutado correctamente!"
     }
   }
 }
