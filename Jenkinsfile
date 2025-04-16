@@ -36,7 +36,7 @@ pipeline {
 
     stage('Run tests') {
       steps {
-        bat 'npm test -- --watchAll=false'
+        bat (script: 'npm test -- --watchAll=false', returnStatus: true)
       }
     }
 
