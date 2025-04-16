@@ -3,7 +3,6 @@ pipeline {
 
   environment {
     CI = "false" // Desactiva que React trate los warnings como errores
-    VERCEL_TOKEN = credentials('78r1T7MIJxVPfG74QEO4j6b0') // Quita esta línea si no despliegas con Vercel
   }
 
   stages {
