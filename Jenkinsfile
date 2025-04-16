@@ -7,18 +7,14 @@ pipeline {
   }
 
   stages {
-    stage('Declarative: Checkout SCM') {
-      steps {
-        checkout scm
-      }
+    stage ('Tool install') {
+        steps {
+            script {
+                def nodeHome = tool name: 'Node 20', type: 'nodejs'
+                env.PATH = "${nodeHome}/bin:${env.PATH}"
+            }
+        }
     }
-
-    stage('Tool Install') {
-      steps {
-        tool name: 'Node 20', type: 'nodejs'
-      }
-    }
-
     stage('Clean workspace') {
       steps {
         deleteDir()
