@@ -1,58 +1,66 @@
 pipeline {
-    agent any
+  agent any
 
-    environment {
-        // 1. Configuración de Node.js (rutas para Windows)
-        NODE_PATH = "C:\\Program Files\\nodejs"
-        NPM_CMD = "${NODE_PATH}\\npm.cmd"
-        
-        // 2. Token de Vercel (debes crearlo en Jenkins > Credentials)
-        VERCEL_TOKEN = credentials('vercel-token')
+  environment {
+    CI = "false" // Desactiva que React trate los warnings como errores
+    VERCEL_TOKEN = credentials('78r1T7MIJxVPfG74QEO4j6b0') // Token (si se usa despliegue, si no, puedes quitarlo)
+  }
+
+  stages {
+    stage('Declarative: Checkout SCM') {
+      steps {
+        checkout scm
+      }
     }
 
-    stages {
-        // ► Etapa 1: Clonar repo (sin duplicidades)
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        // ► Etapa 2: Instalar dependencias (con cache)
-        stage('Install') {
-            steps {
-                bat """
-                    cd /d "%WORKSPACE%"
-                    "${NPM_CMD}" cache clean --force
-                    "${NPM_CMD}" install --legacy-peer-deps
-                """
-            }
-        }
-
-        // ► Etapa 3: Tests (continúa aunque fallen)
-        stage('Test') {
-            steps {
-                bat """
-                    "${NPM_CMD}" test -- --watchAll=false --passWithNoTests
-                """
-            }
-        }
-
-        // ► Etapa 4: Build de producción
-        stage('Build') {
-            steps {
-                bat """
-                    "${NPM_CMD}" run build
-                """
-            }
-        }
+    stage('Tool Install') {
+      steps {
+        tool name: 'Node 20', type: 'nodejs'
+      }
     }
 
-    post {
-        always {
-            echo "✅ Proceso completado. Revisa los logs para detalles."
-            // Opcional: Limpiar workspace
-            // cleanWs()
-        }
+    stage('Clean workspace') {
+      steps {
+        deleteDir()
+      }
     }
+
+    stage('Checkout') {
+      steps {
+        git url: 'https://github.com/manuel4320/node-project.git', branch: 'main'
+      }
+    }
+
+    stage('Install dependencies') {
+      steps {
+        bat 'npm install --legacy-peer-deps'
+      }
+    }
+
+    stage('Run tests') {
+      steps {
+        bat 'npm test -- --watchAll=false'
+      }
+    }
+
+    stage('Build app') {
+      steps {
+        bat 'npm run build'
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "✅ Pipeline ejecutado correctamente. Build exitoso."
+    }
+
+    failure {
+      echo "❌ Error en alguna etapa del pipeline. Revisar los logs."
+    }
+
+    always {
+      echo "📦 Pipeline finalizado (éxito o fallo). Puedes revisar el historial."
+    }
+  }
 }
