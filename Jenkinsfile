@@ -11,7 +11,7 @@ pipeline {
       steps {
         script {
           def nodeHome = tool name: 'Node 20', type: 'nodejs'
-          env.PATH = "${nodeHome}/bin:${env.PATH}"
+          env.PATH = "${nodeHome}\\bin:${env.PATH}"
         }
       }
     }
