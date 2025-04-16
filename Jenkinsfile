@@ -3,15 +3,17 @@ pipeline {
 
   environment {
     CI = "false" // Desactiva que React trate los warnings como errores
-  }
-
+}
   stages {
+    stage('Declarative: Checkout SCM') {
+      steps {
+        checkout scm
+      }
+    }
+
     stage('Tool Install') {
       steps {
-        script {
-          def nodeHome = tool name: 'Node 20', type: 'nodejs'
-          env.PATH = "${nodeHome}\\bin:${env.PATH}"
-        }
+        tool name: 'Node 20', type: 'nodejs'
       }
     }
 
@@ -23,7 +25,7 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        git url: 'https://github.com/manuel4320/node-project.git', branch: 'main'
+        git url: 'https://github.com/guswill24/node-project.git', branch: 'main'
       }
     }
 
@@ -35,7 +37,7 @@ pipeline {
 
     stage('Run tests') {
       steps {
-        bat (script: 'npm test -- --watchAll=false', returnStatus: true)
+        bat 'npm test -- --watchAll=false'
       }
     }
 
