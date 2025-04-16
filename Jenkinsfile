@@ -3,18 +3,19 @@ pipeline {
 
   environment {
     CI = "false" // Desactiva que React trate los warnings como errores
-    VERCEL_TOKEN = credentials('78r1T7MIJxVPfG74QEO4j6b0') // Token (si se usa despliegue, si no, puedes quitarlo)
+    VERCEL_TOKEN = credentials('78r1T7MIJxVPfG74QEO4j6b0') // Quita esta línea si no despliegas con Vercel
   }
 
   stages {
-    stage ('Tool install') {
-        steps {
-            script {
-                def nodeHome = tool name: 'Node 20', type: 'nodejs'
-                env.PATH = "${nodeHome}/bin:${env.PATH}"
-            }
+    stage('Tool Install') {
+      steps {
+        script {
+          def nodeHome = tool name: 'Node 20', type: 'nodejs'
+          env.PATH = "${nodeHome}/bin:${env.PATH}"
         }
+      }
     }
+
     stage('Clean workspace') {
       steps {
         deleteDir()
